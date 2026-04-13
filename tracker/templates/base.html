@@ -7,36 +7,36 @@
   <title>FitLife Studio – Zeiterfassung</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { background-color: #f4f1ec; color: #2e2e2e; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .card { background-color: #ffffff; border: 1px solid #d6d0c4; border-radius: 6px; }
-    .table { color: #2e2e2e; }
-    .table-dark { --bs-table-bg: #3b3b3b; --bs-table-border-color: #555; color: #e8e8e8; }
-    .navbar { background-color: #3b3b3b !important; }
+    body { background-color: #f5f7fa; color: #1e293b; min-height: 100vh; font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; }
+    .table { color: #1e293b; }
+    .table-dark { --bs-table-bg: #1e293b; --bs-table-border-color: #334155; color: #f1f5f9; }
+    .navbar { background-color: #1e3a5f !important; }
     .btn-lang { font-size: 0.85rem; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
     .badge-pulse { animation: pulse 1.5s infinite; }
     .notification-bell { position: relative; cursor: pointer; font-size: 1.3rem; }
     .notification-count {
       position: absolute; top: -6px; right: -8px;
-      background: #c0392b; color: #fff; border-radius: 50%;
+      background: #ef4444; color: #fff; border-radius: 50%;
       font-size: 0.65rem; width: 18px; height: 18px;
       display: flex; align-items: center; justify-content: center;
       font-weight: bold;
     }
     .notification-dropdown {
       position: absolute; right: 0; top: 100%; width: 320px;
-      background: #fff; border: 1px solid #d6d0c4; border-radius: 6px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 1050;
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1); z-index: 1050;
       max-height: 400px; overflow-y: auto; display: none;
     }
     .notification-dropdown.show { display: block; }
     .notification-item {
-      padding: 10px 14px; border-bottom: 1px solid #e8e4dc;
-      font-size: 0.85rem; cursor: pointer; color: #2e2e2e;
+      padding: 10px 14px; border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem; cursor: pointer; color: #1e293b;
     }
-    .notification-item:hover { background: #f9f7f3; }
-    .notification-item.unread { border-left: 3px solid #4a7c6f; }
-    .notification-item .notif-time { font-size: 0.72rem; color: #888; }
+    .notification-item:hover { background: #f8fafc; }
+    .notification-item.unread { border-left: 3px solid #2563eb; }
+    .notification-item .notif-time { font-size: 0.72rem; color: #94a3b8; }
     .notif-type-badge {
       font-size: 0.65rem;
       border-radius: 10px;
@@ -44,10 +44,10 @@
       border: 1px solid transparent;
       margin-left: 6px;
     }
-    .notif-type-reminder { background: rgba(74,124,111,0.15); border-color: #4a7c6f; color: #3a6358; }
-    .notif-type-correction { background: rgba(196,160,70,0.15); border-color: #c4a046; color: #8a7030; }
-    .notif-type-delete { background: rgba(192,57,43,0.15); border-color: #c0392b; color: #96281b; }
-    .notif-type-info { background: rgba(74,124,111,0.15); border-color: #4a7c6f; color: #3a6358; }
+    .notif-type-reminder { background: rgba(37,99,235,0.1); border-color: #2563eb; color: #1d4ed8; }
+    .notif-type-correction { background: rgba(245,158,11,0.1); border-color: #f59e0b; color: #b45309; }
+    .notif-type-delete { background: rgba(239,68,68,0.1); border-color: #ef4444; color: #dc2626; }
+    .notif-type-info { background: rgba(37,99,235,0.1); border-color: #2563eb; color: #1d4ed8; }
     .notification-modal-message { white-space: pre-line; }
     .confirm-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -55,21 +55,21 @@
       display: flex; align-items: center; justify-content: center;
     }
     .confirm-box {
-      background: #fff; border: 1px solid #d6d0c4; border-radius: 8px;
-      padding: 30px; max-width: 400px; width: 90%; text-align: center; color: #2e2e2e;
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 30px; max-width: 400px; width: 90%; text-align: center; color: #1e293b;
     }
-    .bg-dark { background-color: #3b3b3b !important; }
-    .text-light { color: #f4f1ec !important; }
-    .border-secondary { border-color: #d6d0c4 !important; }
-    .btn-outline-danger { border-color: #c0392b; color: #c0392b; }
-    .btn-outline-danger:hover { background-color: #c0392b; color: #fff; }
-    a.navbar-brand { color: #f4f1ec !important; }
+    .bg-dark { background-color: #1e293b !important; }
+    .text-light { color: #f8fafc !important; }
+    .border-secondary { border-color: #e2e8f0 !important; }
+    .btn-outline-danger { border-color: #ef4444; color: #ef4444; }
+    .btn-outline-danger:hover { background-color: #ef4444; color: #fff; }
+    a.navbar-brand { color: #f8fafc !important; font-size: 1.05rem; letter-spacing: -0.01em; }
   </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="/">🏋️ FitLife Studio</a>
+      <a class="navbar-brand fw-bold" href="/">FitLife Studio</a>
       <div class="d-flex align-items-center gap-3">
         <button id="langToggle" class="btn btn-outline-light btn-sm btn-lang" onclick="toggleLanguage()">DE | EN</button>
 
@@ -80,7 +80,7 @@
             <div class="notification-dropdown" id="notifDropdown">
               <div class="p-2 border-bottom d-flex justify-content-between align-items-center" style="border-color:#e8e4dc;">
                 <strong class="small" data-en="Notifications" data-de="Benachrichtigungen">Benachrichtigungen</strong>
-                <button class="btn btn-sm btn-link p-0" style="color:#4a7c6f;" onclick="event.stopPropagation(); doMarkAllRead()" data-en="Mark all read" data-de="Alle gelesen">Alle gelesen</button>
+                <button class="btn btn-sm btn-link p-0" style="color:#2563eb;" onclick="event.stopPropagation(); doMarkAllRead()" data-en="Mark all read" data-de="Alle gelesen">Alle gelesen</button>
               </div>
               <div id="notifList">
                 <div class="p-3 text-center text-muted small" data-en="No notifications" data-de="Keine Benachrichtigungen">Keine Benachrichtigungen</div>
@@ -100,7 +100,7 @@
   </div>
 
   <div id="sideNotification" style="position:fixed;top:80px;right:20px;z-index:3000;display:none;max-width:340px;">
-    <div class="card shadow p-3" style="border-left:4px solid #4a7c6f;">
+    <div class="card shadow p-3" style="border-left:4px solid #2563eb;">
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <strong id="sideNotifTitle" class="d-block mb-1"></strong>
@@ -113,15 +113,15 @@
 
   <div class="modal fade" id="notificationDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content" style="background:#fff;color:#2e2e2e;border:1px solid #d6d0c4;">
-        <div class="modal-header" style="border-bottom:1px solid #e8e4dc;">
+      <div class="modal-content" style="background:#fff;color:#1e293b;border:1px solid #e2e8f0;">
+        <div class="modal-header" style="border-bottom:1px solid #f1f5f9;">
           <h5 class="modal-title" id="notificationModalTitle">Benachrichtigung</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <p id="notificationModalMessage" class="notification-modal-message mb-0"></p>
         </div>
-        <div class="modal-footer" style="border-top:1px solid #e8e4dc;" id="notificationModalActions"></div>
+        <div class="modal-footer" style="border-top:1px solid #f1f5f9;" id="notificationModalActions"></div>
       </div>
     </div>
   </div>
@@ -228,11 +228,11 @@
       if (isHrCorrection) {
         actionsEl.innerHTML =
           '<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">' + (lang === 'de' ? 'Abbrechen' : 'Cancel') + '</button>' +
-          '<button type="button" class="btn" style="background:#c0392b;color:#fff;" onclick="handleCorrectionDecision(' + notif.id + ', \'REJECT\')">' + (lang === 'de' ? 'Ablehnen' : 'Reject') + '</button>' +
-          '<button type="button" class="btn" style="background:#4a7c6f;color:#fff;" onclick="handleCorrectionDecision(' + notif.id + ', \'APPROVE\')">' + (lang === 'de' ? 'Genehmigen' : 'Approve') + '</button>';
+          '<button type="button" class="btn" style="background:#ef4444;color:#fff;" onclick="handleCorrectionDecision(' + notif.id + ', \'REJECT\')">' + (lang === 'de' ? 'Ablehnen' : 'Reject') + '</button>' +
+          '<button type="button" class="btn" style="background:#2563eb;color:#fff;" onclick="handleCorrectionDecision(' + notif.id + ', \'APPROVE\')">' + (lang === 'de' ? 'Genehmigen' : 'Approve') + '</button>';
       } else {
         actionsEl.innerHTML =
-          '<button type="button" class="btn" style="background:#4a7c6f;color:#fff;" onclick="markRead(' + notif.id + ', true)">' + (lang === 'de' ? 'Bestätigen' : 'Acknowledge') + '</button>';
+          '<button type="button" class="btn" style="background:#2563eb;color:#fff;" onclick="markRead(' + notif.id + ', true)">' + (lang === 'de' ? 'Bestätigen' : 'Acknowledge') + '</button>';
       }
 
       if (!notificationModalInstance) {
@@ -323,6 +323,10 @@
         }
         hideNotificationFromUi(notifId);
         if (notificationModalInstance) notificationModalInstance.hide();
+
+        // Close notification dropdown overlay
+        var dd = document.getElementById('notifDropdown');
+        if (dd) dd.classList.remove('show');
 
         var lang = getLang();
         var sideMsg = data.hr_confirmation || '';

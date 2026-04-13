@@ -12,7 +12,7 @@
       </select>
       <input type="number" name="year" value="{{ current_year }}" class="form-control form-control-sm" style="width:90px;" onchange="document.getElementById('monthForm').submit()">
     </form>
-    <a href="{% url 'csv_export' %}?month={{ current_month }}&year={{ current_year }}" class="btn btn-sm" style="border:1px solid #4a7c6f;color:#4a7c6f;" data-en="📥 Export CSV" data-de="📥 CSV exportieren">📥 CSV exportieren</a>
+    <a href="{% url 'csv_export' %}?month={{ current_month }}&year={{ current_year }}" class="btn btn-sm" style="border:1px solid #2563eb;color:#2563eb;" data-en="📥 Export CSV" data-de="📥 CSV exportieren">📥 CSV exportieren</a>
   </div>
 </div>
 
@@ -20,7 +20,7 @@
 
 <div class="table-responsive">
   <table class="table table-hover">
-    <thead style="background:#3b3b3b;color:#f4f1ec;">
+    <thead style="background:#1e3a5f;color:#f8fafc;">
       <tr>
         <th></th>
         <th data-en="Employee" data-de="Mitarbeitender">Mitarbeitender</th>
@@ -34,8 +34,8 @@
     </thead>
     <tbody>
       {% for emp in employee_data %}
-      <tr data-bs-toggle="collapse" data-bs-target="#detail-{{ emp.profile.pk }}" style="cursor:pointer;{% if emp.delta < -5 %}background:rgba(192,57,43,0.1);{% elif emp.delta > 5 %}background:rgba(196,160,70,0.1);{% endif %}">
-        <td><span class="badge" style="background:#8a8a8a;">▼</span></td>
+      <tr data-bs-toggle="collapse" data-bs-target="#detail-{{ emp.profile.pk }}" style="cursor:pointer;{% if emp.delta < -5 %}background:rgba(239,68,68,0.08);{% elif emp.delta > 5 %}background:rgba(245,158,11,0.08);{% endif %}">
+        <td><span class="badge" style="background:#94a3b8;">▼</span></td>
         <td>{{ emp.profile }}</td>
         <td>{{ emp.profile.department }}</td>
         <td>{{ emp.target }}</td>
@@ -46,20 +46,25 @@
         <td>
           <span id="reviewStatus-{{ emp.hr_review.pk }}"
                 class="badge {% if emp.hr_review.status == 'REVIEWED' %}{% elif emp.hr_review.status == 'REMINDER_SENT' %}{% endif %}"
-                style="{% if emp.hr_review.status == 'REVIEWED' %}background:#4a7c6f;{% elif emp.hr_review.status == 'REMINDER_SENT' %}background:#4a7c6f;opacity:0.7;{% else %}background:#8a8a8a;{% endif %}color:#fff;">
+                style="{% if emp.hr_review.status == 'REVIEWED' %}background:#2563eb;{% elif emp.hr_review.status == 'REMINDER_SENT' %}background:#f59e0b;{% else %}background:#94a3b8;{% endif %}color:#fff;">
             {{ emp.hr_review.status }}
           </span>
         </td>
         <td>
           <button id="reminderBtn-{{ emp.hr_review.pk }}"
-                  class="btn btn-sm {% if emp.hr_review.status == 'REMINDER_SENT' %}disabled{% endif %}"
-                  style="{% if emp.hr_review.status == 'REMINDER_SENT' %}background:#8a8a8a;color:#fff;{% else %}border:1px solid #c4a046;color:#c4a046;{% endif %}"
-                  onclick="event.stopPropagation(); {% if emp.hr_review.status != 'REMINDER_SENT' %}openReminderModal({{ emp.hr_review.pk }}, '{{ emp.profile }}'){% endif %}"
+                  class="btn btn-sm {% if emp.hr_review.status == 'REMINDER_SENT' or emp.hr_review.status == 'REVIEWED' %}disabled{% endif %}"
+                  {% if emp.hr_review.status == 'REMINDER_SENT' or emp.hr_review.status == 'REVIEWED' %}disabled{% endif %}
+                  style="{% if emp.hr_review.status == 'REMINDER_SENT' or emp.hr_review.status == 'REVIEWED' %}background:#94a3b8;color:#fff;border-color:#94a3b8;{% else %}border:1px solid #f59e0b;color:#b45309;{% endif %}"
+                  onclick="event.stopPropagation(); {% if emp.hr_review.status != 'REMINDER_SENT' and emp.hr_review.status != 'REVIEWED' %}openReminderModal({{ emp.hr_review.pk }}, '{{ emp.profile }}'){% endif %}"
                   data-en="{% if emp.hr_review.status == 'REMINDER_SENT' %}Reminder Sent{% else %}Send Reminder{% endif %}"
                   data-de="{% if emp.hr_review.status == 'REMINDER_SENT' %}Erinnerung gesendet{% else %}Erinnerung senden{% endif %}">
             {% if emp.hr_review.status == 'REMINDER_SENT' %}Erinnerung gesendet{% else %}Erinnerung senden{% endif %}
           </button>
-          <button class="btn btn-sm" style="border:1px solid #4a7c6f;color:#4a7c6f;" onclick="event.stopPropagation(); doAcknowledge({{ emp.hr_review.pk }})"
+          <button id="reviewBtn-{{ emp.hr_review.pk }}"
+                  class="btn btn-sm {% if emp.hr_review.status == 'REVIEWED' or emp.hr_review.status == 'REMINDER_SENT' %}disabled{% endif %}"
+                  {% if emp.hr_review.status == 'REVIEWED' or emp.hr_review.status == 'REMINDER_SENT' %}disabled{% endif %}
+                  style="{% if emp.hr_review.status == 'REVIEWED' or emp.hr_review.status == 'REMINDER_SENT' %}background:#94a3b8;color:#fff;border-color:#94a3b8;{% else %}border:1px solid #2563eb;color:#2563eb;{% endif %}"
+                  onclick="event.stopPropagation(); {% if emp.hr_review.status != 'REVIEWED' and emp.hr_review.status != 'REMINDER_SENT' %}doAcknowledge({{ emp.hr_review.pk }}){% endif %}"
                   data-en="Acknowledge" data-de="Bestätigen">Bestätigen</button>
         </td>
       </tr>
@@ -84,7 +89,7 @@
                   <td>{{ rec.clock_in|date:"H:i"|default:"--" }}</td>
                   <td>
                     {% if rec.clock_in and not rec.clock_out %}
-                      <span style="color:#c0392b;" data-en="No clock-out" data-de="Kein Ausstempeln">Kein Ausstempeln</span>
+                      <span style="color:#ef4444;" data-en="No clock-out" data-de="Kein Ausstempeln">Kein Ausstempeln</span>
                     {% else %}
                       {{ rec.clock_out|date:"H:i"|default:"--" }}
                     {% endif %}
@@ -95,7 +100,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="6"><span class="badge" style="background:#c0392b;color:#fff;" data-en="No entries" data-de="Keine Einträge">Keine Einträge</span></td>
+                  <td colspan="6"><span class="badge" style="background:#ef4444;color:#fff;" data-en="No entries" data-de="Keine Einträge">Keine Einträge</span></td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -110,8 +115,8 @@
 
 <div class="modal fade" id="reminderModal" tabindex="-1">
   <div class="modal-dialog">
-    <div class="modal-content" style="background:#fff;color:#2e2e2e;border:1px solid #d6d0c4;">
-      <div class="modal-header" style="border-bottom:1px solid #e8e4dc;">
+    <div class="modal-content" style="background:#fff;color:#1e293b;border:1px solid #e2e8f0;">
+      <div class="modal-header" style="border-bottom:1px solid #f1f5f9;">
         <h5 class="modal-title" data-en="Send Reminder" data-de="Erinnerung senden">Erinnerung senden</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
@@ -128,9 +133,9 @@
                     data-de="Bitte überprüfen und korrigieren Sie Ihre Zeiteinträge für diesen Monat.">Bitte überprüfen und korrigieren Sie Ihre Zeiteinträge für diesen Monat.</textarea>
         </div>
       </div>
-      <div class="modal-footer" style="border-top:1px solid #e8e4dc;">
+      <div class="modal-footer" style="border-top:1px solid #f1f5f9;">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-en="Cancel" data-de="Abbrechen">Abbrechen</button>
-        <button type="button" class="btn" style="background:#c4a046;color:#fff;" onclick="doSendReminder()" data-en="Send" data-de="Senden">Senden</button>
+        <button type="button" class="btn" style="background:#f59e0b;color:#fff;" onclick="doSendReminder()" data-en="Send" data-de="Senden">Senden</button>
       </div>
     </div>
   </div>
@@ -166,19 +171,30 @@ function doSendReminder() {
     if (data.ok) {
       var badge = document.getElementById('reviewStatus-' + reviewId);
       badge.textContent = data.status;
-      badge.style.background = '#4a7c6f';
-      badge.style.opacity = '0.7';
+      badge.style.background = '#f59e0b';
+      badge.style.opacity = '1';
       var reminderBtn = document.getElementById('reminderBtn-' + reviewId);
       if (reminderBtn) {
         var lang = localStorage.getItem('lang') || 'de';
         reminderBtn.className = 'btn btn-sm disabled';
-        reminderBtn.style.background = '#8a8a8a';
+        reminderBtn.disabled = true;
+        reminderBtn.style.background = '#94a3b8';
         reminderBtn.style.color = '#fff';
-        reminderBtn.style.borderColor = '#8a8a8a';
+        reminderBtn.style.borderColor = '#94a3b8';
         reminderBtn.textContent = lang === 'de' ? 'Erinnerung gesendet' : 'Reminder sent';
         reminderBtn.onclick = function(e) { e.stopPropagation(); };
         reminderBtn.setAttribute('data-de', 'Erinnerung gesendet');
         reminderBtn.setAttribute('data-en', 'Reminder Sent');
+      }
+      // Disable the review/acknowledge button when reminder is sent
+      var reviewBtn = document.getElementById('reviewBtn-' + reviewId);
+      if (reviewBtn) {
+        reviewBtn.className = 'btn btn-sm disabled';
+        reviewBtn.disabled = true;
+        reviewBtn.style.background = '#94a3b8';
+        reviewBtn.style.color = '#fff';
+        reviewBtn.style.borderColor = '#94a3b8';
+        reviewBtn.onclick = function(e) { e.stopPropagation(); };
       }
       bootstrap.Modal.getInstance(document.getElementById('reminderModal')).hide();
       var lang = localStorage.getItem('lang') || 'de';
@@ -204,8 +220,28 @@ function doAcknowledge(reviewId) {
     if (data.ok) {
       var badge = document.getElementById('reviewStatus-' + reviewId);
       badge.textContent = data.status;
-      badge.style.background = '#4a7c6f';
+      badge.style.background = '#2563eb';
       badge.style.opacity = '1';
+      // Disable the reminder button when review is acknowledged
+      var reminderBtn = document.getElementById('reminderBtn-' + reviewId);
+      if (reminderBtn) {
+        reminderBtn.className = 'btn btn-sm disabled';
+        reminderBtn.disabled = true;
+        reminderBtn.style.background = '#94a3b8';
+        reminderBtn.style.color = '#fff';
+        reminderBtn.style.borderColor = '#94a3b8';
+        reminderBtn.onclick = function(e) { e.stopPropagation(); };
+      }
+      // Disable the review button itself
+      var reviewBtn = document.getElementById('reviewBtn-' + reviewId);
+      if (reviewBtn) {
+        reviewBtn.className = 'btn btn-sm disabled';
+        reviewBtn.disabled = true;
+        reviewBtn.style.background = '#94a3b8';
+        reviewBtn.style.color = '#fff';
+        reviewBtn.style.borderColor = '#94a3b8';
+        reviewBtn.onclick = function(e) { e.stopPropagation(); };
+      }
     } else {
       alert(data.error);
     }
