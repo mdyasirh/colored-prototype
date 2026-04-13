@@ -24,11 +24,6 @@
   <div class="col-lg-8">
     <h2 class="mb-4" data-en="Punch Clock" data-de="Stempeluhr">Stempeluhr</h2>
 
-    <div id="offlineBanner" class="alert alert-warning d-none" role="alert">
-      <strong data-en="Offline mode:" data-de="Offline-Modus:">Offline-Modus:</strong>
-      <span data-en="Actions are saved locally and will sync automatically." data-de="Aktionen werden lokal gespeichert und automatisch synchronisiert.">Aktionen werden lokal gespeichert und automatisch synchronisiert.</span>
-    </div>
-
     <div class="row g-3 mb-4">
       <div class="col-md-6">
         <div class="card p-3 h-100 clock-panel">
@@ -218,7 +213,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('plannedDayHours').textContent = CONTRACT_HOURS_PER_DAY.toFixed(2);
   document.getElementById('plannedDaysWeek').textContent = String(CONTRACT_DAYS_PER_WEEK);
   applyPlanDeviationStyle();
-  setupOfflineSync();
   renderState(initialStatus, initialClockIn);
 });
 
@@ -307,26 +301,6 @@ function stopShiftTimer() {
   }
 }
 
-function setupOfflineSync() {
-  var offlineBanner = document.getElementById('offlineBanner');
-  var queueKey = 'fitlife_pending_punches';
-  if (!navigator.onLine) offlineBanner.classList.remove('d-none');
-  window.addEventListener('offline', function() { offlineBanner.classList.remove('d-none'); });
-  window.addEventListener('online', function() {
-    offlineBanner.classList.add('d-none');
-    var queue = JSON.parse(localStorage.getItem(queueKey) || '[]');
-    if (queue.length === 0) return;
-    var chain = Promise.resolve();
-    queue.forEach(function(item) {
-      chain = chain.then(function() { return doPunch(item.action, true); });
-    });
-    chain.then(function() {
-      localStorage.removeItem(queueKey);
-      setTimeout(function() { location.reload(); }, 600);
-    });
-  });
-}
-
 function renderState(status, clockIn) {
   var statusArea = document.getElementById('statusArea');
   var actionBtns = document.getElementById('actionButtons');
@@ -403,22 +377,12 @@ function hideConfirm() {
   _confirmCallback = null;
 }
 
-function doPunch(action, fromOfflineQueue) {
-  var queueKey = 'fitlife_pending_punches';
+function doPunch(action) {
   var body = new URLSearchParams();
   if (action === 'punch-in') {
     var nowIso = new Date().toISOString();
     body.append('clock_in', nowIso);
-    if (!fromOfflineQueue) activeClockInIso = nowIso;
-  }
-  if (!navigator.onLine && !fromOfflineQueue) {
-    var queue = JSON.parse(localStorage.getItem(queueKey) || '[]');
-    queue.push({ action: action, queued_at: new Date().toISOString() });
-    localStorage.setItem(queueKey, JSON.stringify(queue));
-    document.getElementById('offlineBanner').classList.remove('d-none');
-    var lang = localStorage.getItem('lang') || 'de';
-    showToast(lang === 'de' ? 'Offline: Aktion lokal gespeichert.' : 'Offline: action stored locally.');
-    return Promise.resolve();
+    activeClockInIso = nowIso;
   }
   return fetch('/api/' + action + '/', {
     method: 'POST',
@@ -456,15 +420,6 @@ function doPunch(action, fromOfflineQueue) {
       activeBreakStartIso = '';
       pausedWorkedSeconds = null;
     }
-  }).catch(function(error) {
-    if (!fromOfflineQueue) {
-      var queue = JSON.parse(localStorage.getItem(queueKey) || '[]');
-      queue.push({ action: action, queued_at: new Date().toISOString() });
-      localStorage.setItem(queueKey, JSON.stringify(queue));
-      document.getElementById('offlineBanner').classList.remove('d-none');
-      return;
-    }
-    throw error;
   });
 }
 

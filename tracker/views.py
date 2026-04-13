@@ -14,8 +14,6 @@ from django.views.decorators.http import require_POST
 from .models import CorrectionRequest, DailyTimeRecord, EmployeeProfile, HRReview, Notification
 
 
-# Hilfsfunktionen
-
 def is_hr(user):
     return user.groups.filter(name="HR").exists()
 
@@ -33,7 +31,6 @@ def _parse_browser_iso_to_local(iso_value):
 
 
 def _get_active_record(profile):
-    """Letzten offenen Zeiteintrag des Mitarbeiters zurückgeben."""
     today = timezone.localdate()
     record = (
         DailyTimeRecord.objects.filter(
@@ -46,7 +43,6 @@ def _get_active_record(profile):
     )
     if record:
         return record
-    # Offener Eintrag von heute (falls vorhanden)
     return (
         DailyTimeRecord.objects.filter(
             employee=profile,
@@ -58,9 +54,7 @@ def _get_active_record(profile):
 
 
 def _today_record(profile):
-    """Tageseintrag für das Profil abrufen oder erstellen."""
     today = datetime.date.today()
-    # Get the latest active (non-CLOCKED_OUT) record for today, or create new
     record = DailyTimeRecord.objects.filter(
         employee=profile,
         date=today,
@@ -68,7 +62,6 @@ def _today_record(profile):
     ).first()
     if record:
         return record
-    # Create a new record for this shift
     record = DailyTimeRecord.objects.create(
         employee=profile,
         date=today,
@@ -77,8 +70,6 @@ def _today_record(profile):
     )
     return record
 
-
-# Anmeldung / Abmeldung
 
 def login_view(request):
     error = ""
@@ -100,11 +91,8 @@ def logout_view(request):
     return redirect("login")
 
 
-# Benachrichtigungs-Endpunkte
-
 @login_required
 def api_notifications(request):
-    """Ungelesene Benachrichtigungen als JSON zurückgeben."""
     notifications_qs = Notification.objects.filter(
         recipient=request.user,
         is_read=False,
@@ -159,7 +147,6 @@ def api_notifications(request):
 @login_required
 @require_POST
 def api_mark_notification_read(request):
-    """Benachrichtigung als gelesen markieren."""
     notif_id = request.POST.get("notification_id")
     try:
         notif = Notification.objects.get(pk=notif_id, recipient=request.user)
@@ -174,29 +161,23 @@ def api_mark_notification_read(request):
 @login_required
 @require_POST
 def api_mark_all_notifications_read(request):
-    """Alle Benachrichtigungen als gelesen markieren."""
     Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
     return JsonResponse({"ok": True})
 
-
-# Stempeluhr-Seite
 
 @login_required
 def punch_clock_view(request):
     profile = request.user.employeeprofile
     today = timezone.localdate()
 
-    # Current active record (if any)
     record = _get_active_record(profile)
 
-    # All completed records for today
     today_records = DailyTimeRecord.objects.filter(
         employee=profile,
         date=today,
         status="CLOCKED_OUT",
     ).order_by("clock_in")
 
-    # Weekly overview: last 7 days (including today's completed records)
     week_start = today - datetime.timedelta(days=7)
     weekly_records = (
         DailyTimeRecord.objects.filter(employee=profile, date__gte=week_start, date__lte=today)
@@ -215,7 +196,6 @@ def punch_clock_view(request):
     planned_monthly = profile.target_hours_per_month
     monthly_delta = actual_monthly - planned_monthly
 
-    # Notification count
     unread_count = Notification.objects.filter(recipient=request.user, is_read=False).count()
 
     ctx = {
@@ -231,8 +211,6 @@ def punch_clock_view(request):
     return render(request, "punch_clock.html", ctx)
 
 
-# Stempeluhr AJAX-Endpunkte
-
 @login_required
 @require_POST
 def api_punch_in(request):
@@ -241,7 +219,6 @@ def api_punch_in(request):
     clock_in_local = _parse_browser_iso_to_local(browser_clock_in)
     today = clock_in_local.date()
 
-    # Check for any active (non-clocked-out) record today
     active = _get_active_record(profile)
 
     if active:
@@ -308,7 +285,6 @@ def api_punch_out(request):
     if not record:
         return JsonResponse({"ok": False, "error": "No active record found to clock out."})
 
-    # End any running break
     if record.status == "ON_BREAK" and record.break_start:
         delta = (timezone.now() - record.break_start).total_seconds()
         record.total_break_minutes += int(delta // 60)
@@ -438,7 +414,6 @@ def api_approve_correction(request):
 @login_required
 @require_POST
 def api_submit_correction(request):
-    """Korrekturanfrage für einen Zeiteintrag einreichen."""
     profile = request.user.employeeprofile
     record_id = request.POST.get("record_id")
     proposed_clock_in = request.POST.get("proposed_clock_in", "").strip()
@@ -475,7 +450,6 @@ def api_submit_correction(request):
 
     correction = CorrectionRequest.objects.create(record=record, **correction_data)
 
-    # Send notification to all HR users
     from django.contrib.auth.models import User
     hr_users = User.objects.filter(groups__name="HR")
     for hr_user in hr_users:
@@ -494,7 +468,6 @@ def api_submit_correction(request):
 @login_required
 @require_POST
 def api_delete_record(request):
-    """Löschanfrage an HR senden (kein sofortiges Löschen)."""
     profile = request.user.employeeprofile
     record_id = request.POST.get("record_id")
 
@@ -524,14 +497,11 @@ def api_delete_record(request):
     return JsonResponse({"ok": True, "request_id": correction.id})
 
 
-# HR-Übersicht
-
 @login_required
 @user_passes_test(is_hr, login_url="/access-denied/")
 def hr_dashboard_view(request):
     today = datetime.date.today()
 
-    # Allow month/year selection, default to current month
     try:
         selected_month = int(request.GET.get("month", today.month))
         selected_year = int(request.GET.get("year", today.year))
@@ -539,7 +509,6 @@ def hr_dashboard_view(request):
         selected_month = today.month
         selected_year = today.year
 
-    # Filter out HR group members from the employee list
     employees = EmployeeProfile.objects.select_related("user").exclude(
         user__groups__name="HR"
     ).all()
@@ -561,7 +530,6 @@ def hr_dashboard_view(request):
         target = emp.target_hours_per_month
         delta = actual_hours - target
 
-        # HR review status
         hr_review, _ = HRReview.objects.get_or_create(
             employee=emp,
             month=selected_month,
@@ -578,10 +546,8 @@ def hr_dashboard_view(request):
             "hr_review": hr_review,
         })
 
-    # Notification count for HR
     unread_count = Notification.objects.filter(recipient=request.user, is_read=False).count()
 
-    # Month choices for the selector
     month_choices = [
         (1, "Jan"), (2, "Feb"), (3, "Mär"), (4, "Apr"),
         (5, "Mai"), (6, "Jun"), (7, "Jul"), (8, "Aug"),
@@ -601,8 +567,6 @@ def hr_dashboard_view(request):
 def access_denied_view(request):
     return render(request, "access_denied.html", status=403)
 
-
-# HR-Aktionen
 
 @login_required
 @user_passes_test(is_hr, login_url="/access-denied/")
@@ -642,7 +606,6 @@ def api_send_reminder(request):
     review.status = "REMINDER_SENT"
     review.save()
 
-    # Create in-app notification for the employee
     Notification.objects.create(
         recipient=review.employee.user,
         sender=request.user,
@@ -673,8 +636,6 @@ def api_acknowledge(request):
     review.save()
     return JsonResponse({"ok": True, "status": review.status})
 
-
-# CSV-Export
 
 @login_required
 @user_passes_test(is_hr, login_url="/access-denied/")

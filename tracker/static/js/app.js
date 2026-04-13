@@ -1,8 +1,3 @@
-/*
- * FitLife Studio – app.js
- * Language toggle and notification polling.
- */
-
 function applyLanguage(lang) {
   document.querySelectorAll('[data-en][data-de]').forEach(function(el) {
     var text = el.getAttribute('data-' + lang);

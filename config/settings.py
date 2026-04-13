@@ -1,5 +1,3 @@
-"""Konfiguration für das FitLife Studio Zeiterfassungssystem."""
-
 import os
 from pathlib import Path
 
