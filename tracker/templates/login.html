@@ -4,7 +4,7 @@
 <div class="row justify-content-center mt-5">
   <div class="col-md-5">
     <div class="card shadow p-4">
-      <h3 class="text-center mb-4 text-light" data-en="Employee Login" data-de="Mitarbeiter-Login">Mitarbeiter-Login</h3>
+      <h3 class="text-center mb-4 text-light" data-en="Employee Login" data-de="Mitarbeiter-Anmeldung">Mitarbeiter-Anmeldung</h3>
 
       {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
@@ -21,8 +21,55 @@
           <input type="password" name="password" id="pinField" class="form-control bg-dark text-light border-secondary" required>
         </div>
 
-        <button type="submit" class="btn btn-success w-100" data-en="Sign In" data-de="Anmelden">Anmelden</button>
+        <button type="submit" class="btn w-100" style="background-color:#4a7c6f;color:#fff;" data-en="Sign In" data-de="Anmelden">Anmelden</button>
       </form>
+    </div>
+
+    <div class="card shadow p-4 mt-4">
+      <h5 class="mb-3 text-light" data-en="Demo Credentials" data-de="Demo-Zugangsdaten">Demo-Zugangsdaten</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-dark mb-0">
+          <thead>
+            <tr>
+              <th data-en="Username" data-de="Benutzername">Benutzername</th>
+              <th data-en="Password" data-de="Passwort">Passwort</th>
+              <th data-en="Role" data-de="Rolle">Rolle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>lisa</td>
+              <td>1234</td>
+              <td data-en="Employee" data-de="Mitarbeitender">Mitarbeitender</td>
+            </tr>
+            <tr>
+              <td>tom</td>
+              <td>2345</td>
+              <td data-en="Employee" data-de="Mitarbeitender">Mitarbeitender</td>
+            </tr>
+            <tr>
+              <td>klara</td>
+              <td>3456</td>
+              <td data-en="Employee" data-de="Mitarbeitender">Mitarbeitender</td>
+            </tr>
+            <tr>
+              <td>max</td>
+              <td>4567</td>
+              <td data-en="Employee" data-de="Mitarbeitender">Mitarbeitender</td>
+            </tr>
+            <tr>
+              <td>anna</td>
+              <td>5678</td>
+              <td data-en="Employee" data-de="Mitarbeitender">Mitarbeitender</td>
+            </tr>
+            <tr>
+              <td>hr</td>
+              <td>hr1234</td>
+              <td data-en="Admin" data-de="Admin">Admin</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
