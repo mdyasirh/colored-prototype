@@ -7,35 +7,35 @@
   <title>FitLife Studio – Zeiterfassung</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { background-color: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
-    .card { background-color: #16213e; border: 1px solid #0f3460; }
-    .table { color: #e0e0e0; }
-    .table-dark { --bs-table-bg: #16213e; --bs-table-border-color: #0f3460; }
-    .navbar { background-color: #0f3460 !important; }
+    body { background-color: #f4f1ec; color: #2e2e2e; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card { background-color: #ffffff; border: 1px solid #d6d0c4; border-radius: 6px; }
+    .table { color: #2e2e2e; }
+    .table-dark { --bs-table-bg: #3b3b3b; --bs-table-border-color: #555; color: #e8e8e8; }
+    .navbar { background-color: #3b3b3b !important; }
     .btn-lang { font-size: 0.85rem; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
     .badge-pulse { animation: pulse 1.5s infinite; }
     .notification-bell { position: relative; cursor: pointer; font-size: 1.3rem; }
     .notification-count {
       position: absolute; top: -6px; right: -8px;
-      background: #dc3545; color: #fff; border-radius: 50%;
+      background: #c0392b; color: #fff; border-radius: 50%;
       font-size: 0.65rem; width: 18px; height: 18px;
       display: flex; align-items: center; justify-content: center;
       font-weight: bold;
     }
     .notification-dropdown {
       position: absolute; right: 0; top: 100%; width: 320px;
-      background: #16213e; border: 1px solid #0f3460; border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.4); z-index: 1050;
+      background: #fff; border: 1px solid #d6d0c4; border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 1050;
       max-height: 400px; overflow-y: auto; display: none;
     }
     .notification-dropdown.show { display: block; }
     .notification-item {
-      padding: 10px 14px; border-bottom: 1px solid #0f3460;
-      font-size: 0.85rem; cursor: pointer;
+      padding: 10px 14px; border-bottom: 1px solid #e8e4dc;
+      font-size: 0.85rem; cursor: pointer; color: #2e2e2e;
     }
-    .notification-item:hover { background: #1a2744; }
-    .notification-item.unread { border-left: 3px solid #0d6efd; }
+    .notification-item:hover { background: #f9f7f3; }
+    .notification-item.unread { border-left: 3px solid #4a7c6f; }
     .notification-item .notif-time { font-size: 0.72rem; color: #888; }
     .notif-type-badge {
       font-size: 0.65rem;
@@ -44,23 +44,29 @@
       border: 1px solid transparent;
       margin-left: 6px;
     }
-    .notif-type-reminder { background: rgba(13, 202, 240, 0.2); border-color: #0dcaf0; color: #9eeaf9; }
-    .notif-type-correction { background: rgba(255, 193, 7, 0.2); border-color: #ffc107; color: #ffe69c; }
-    .notif-type-delete { background: rgba(220, 53, 69, 0.2); border-color: #dc3545; color: #f5c2c7; }
-    .notif-type-info { background: rgba(25, 135, 84, 0.2); border-color: #198754; color: #a3cfbb; }
+    .notif-type-reminder { background: rgba(74,124,111,0.15); border-color: #4a7c6f; color: #3a6358; }
+    .notif-type-correction { background: rgba(196,160,70,0.15); border-color: #c4a046; color: #8a7030; }
+    .notif-type-delete { background: rgba(192,57,43,0.15); border-color: #c0392b; color: #96281b; }
+    .notif-type-info { background: rgba(74,124,111,0.15); border-color: #4a7c6f; color: #3a6358; }
     .notification-modal-message { white-space: pre-line; }
     .confirm-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); z-index: 2000;
+      background: rgba(0,0,0,0.5); z-index: 2000;
       display: flex; align-items: center; justify-content: center;
     }
     .confirm-box {
-      background: #16213e; border: 1px solid #0f3460; border-radius: 12px;
-      padding: 30px; max-width: 400px; width: 90%; text-align: center;
+      background: #fff; border: 1px solid #d6d0c4; border-radius: 8px;
+      padding: 30px; max-width: 400px; width: 90%; text-align: center; color: #2e2e2e;
     }
+    .bg-dark { background-color: #3b3b3b !important; }
+    .text-light { color: #f4f1ec !important; }
+    .border-secondary { border-color: #d6d0c4 !important; }
+    .btn-outline-danger { border-color: #c0392b; color: #c0392b; }
+    .btn-outline-danger:hover { background-color: #c0392b; color: #fff; }
+    a.navbar-brand { color: #f4f1ec !important; }
   </style>
 </head>
-<body class="bg-dark text-light">
+<body>
   <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="/">🏋️ FitLife Studio</a>
@@ -68,14 +74,13 @@
         <button id="langToggle" class="btn btn-outline-light btn-sm btn-lang" onclick="toggleLanguage()">DE | EN</button>
 
         {% if user.is_authenticated %}
-          <!-- Notification Bell -->
           <div class="notification-bell" id="notifBell" onclick="toggleNotifDropdown()">
             🔔
             <span class="notification-count" id="notifBadge" style="display:none;">0</span>
             <div class="notification-dropdown" id="notifDropdown">
-              <div class="p-2 border-bottom border-secondary d-flex justify-content-between align-items-center">
+              <div class="p-2 border-bottom d-flex justify-content-between align-items-center" style="border-color:#e8e4dc;">
                 <strong class="small" data-en="Notifications" data-de="Benachrichtigungen">Benachrichtigungen</strong>
-                <button class="btn btn-sm btn-link text-info p-0" onclick="event.stopPropagation(); doMarkAllRead()" data-en="Mark all read" data-de="Alle gelesen">Alle gelesen</button>
+                <button class="btn btn-sm btn-link p-0" style="color:#4a7c6f;" onclick="event.stopPropagation(); doMarkAllRead()" data-en="Mark all read" data-de="Alle gelesen">Alle gelesen</button>
               </div>
               <div id="notifList">
                 <div class="p-3 text-center text-muted small" data-en="No notifications" data-de="Keine Benachrichtigungen">Keine Benachrichtigungen</div>
@@ -94,17 +99,29 @@
     {% block content %}{% endblock %}
   </div>
 
+  <div id="sideNotification" style="position:fixed;top:80px;right:20px;z-index:3000;display:none;max-width:340px;">
+    <div class="card shadow p-3" style="border-left:4px solid #4a7c6f;">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <strong id="sideNotifTitle" class="d-block mb-1"></strong>
+          <small id="sideNotifMessage" class="text-muted"></small>
+        </div>
+        <button class="btn-close" onclick="hideSideNotification()"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade" id="notificationDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content bg-dark text-light border-secondary">
-        <div class="modal-header border-secondary">
+      <div class="modal-content" style="background:#fff;color:#2e2e2e;border:1px solid #d6d0c4;">
+        <div class="modal-header" style="border-bottom:1px solid #e8e4dc;">
           <h5 class="modal-title" id="notificationModalTitle">Benachrichtigung</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <p id="notificationModalMessage" class="notification-modal-message mb-0"></p>
         </div>
-        <div class="modal-footer border-secondary" id="notificationModalActions"></div>
+        <div class="modal-footer" style="border-top:1px solid #e8e4dc;" id="notificationModalActions"></div>
       </div>
     </div>
   </div>
@@ -112,110 +129,110 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/app.js' %}"></script>
   <script>
-    // Notification dropdown logic
     function toggleNotifDropdown() {
-      const dd = document.getElementById('notifDropdown');
+      var dd = document.getElementById('notifDropdown');
       dd.classList.toggle('show');
       if (dd.classList.contains('show')) {
         loadNotifications();
       }
     }
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-      const bell = document.getElementById('notifBell');
-      const dd = document.getElementById('notifDropdown');
+    document.addEventListener('click', function(e) {
+      var bell = document.getElementById('notifBell');
+      var dd = document.getElementById('notifDropdown');
       if (bell && dd && !bell.contains(e.target)) {
         dd.classList.remove('show');
       }
     });
 
-    let currentNotifications = [];
-    let notificationModalInstance = null;
+    var currentNotifications = [];
+    var notificationModalInstance = null;
 
     function getCsrfToken() {
-      return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+      var el = document.querySelector('[name=csrfmiddlewaretoken]');
+      return el ? el.value : '{{ csrf_token }}';
     }
 
     function getLang() {
       return localStorage.getItem('lang') || 'de';
     }
 
+    function showSideNotification(title, message) {
+      var container = document.getElementById('sideNotification');
+      document.getElementById('sideNotifTitle').textContent = title;
+      document.getElementById('sideNotifMessage').textContent = message;
+      container.style.display = 'block';
+      setTimeout(function() { hideSideNotification(); }, 5000);
+    }
+
+    function hideSideNotification() {
+      document.getElementById('sideNotification').style.display = 'none';
+    }
+
     function hideNotificationFromUi(notifId) {
-      currentNotifications = currentNotifications.filter(n => n.id !== notifId);
-      const card = document.querySelector(`.notification-item[data-notif-id="${notifId}"]`);
+      currentNotifications = currentNotifications.filter(function(n) { return n.id !== notifId; });
+      var card = document.querySelector('.notification-item[data-notif-id="' + notifId + '"]');
       if (card) card.remove();
       updateNotificationBadge(currentNotifications.length);
-      const list = document.getElementById('notifList');
+      var list = document.getElementById('notifList');
       if (currentNotifications.length === 0) {
-        const lang = getLang();
-        list.innerHTML = `<div class="p-3 text-center text-muted small">${lang === 'de' ? 'Keine Benachrichtigungen' : 'No notifications'}</div>`;
+        var lang = getLang();
+        list.innerHTML = '<div class="p-3 text-center text-muted small">' + (lang === 'de' ? 'Keine Benachrichtigungen' : 'No notifications') + '</div>';
       }
     }
 
     function buildCorrectionMessage(notif) {
-      const c = notif.correction || {};
-      const lang = getLang();
-      const isDelete = Boolean(c.is_delete_request);
+      var c = notif.correction || {};
+      var lang = getLang();
+      var isDelete = Boolean(c.is_delete_request);
       if (isDelete) {
-        const dateLine = lang === 'de' ? 'Datum' : 'Date';
-        const employeeLine = lang === 'de' ? 'Mitarbeiter' : 'Employee';
-        const noteLine = lang === 'de' ? 'Hinweis' : 'Note';
         return [
           lang === 'de' ? 'Löschanfrage für Zeiteintrag' : 'Delete request for time entry',
           '',
-          `${dateLine}: ${c.record_date || '-'}`,
-          `${employeeLine}: ${c.employee || '-'}`,
-          `${noteLine}: ${c.note || '-'}`,
+          (lang === 'de' ? 'Datum' : 'Date') + ': ' + (c.record_date || '-'),
+          (lang === 'de' ? 'Mitarbeiter' : 'Employee') + ': ' + (c.employee || '-'),
+          (lang === 'de' ? 'Hinweis' : 'Note') + ': ' + (c.note || '-'),
         ].join('\n');
       }
-      const dateLine = lang === 'de' ? 'Datum' : 'Date';
-      const inLine = lang === 'de' ? 'Vorschlag Kommen' : 'Requested clock-in';
-      const outLine = lang === 'de' ? 'Vorschlag Gehen' : 'Requested clock-out';
-      const breakLine = lang === 'de' ? 'Vorschlag Pause' : 'Requested break';
-      const noteLine = lang === 'de' ? 'Notiz' : 'Note';
       return [
         notif.message,
         '',
-        `${dateLine}: ${c.record_date || '-'}`,
-        `${inLine}: ${c.proposed_clock_in || '-'}`,
-        `${outLine}: ${c.proposed_clock_out || '-'}`,
-        `${breakLine}: ${c.proposed_break_minutes !== null && c.proposed_break_minutes !== undefined ? c.proposed_break_minutes + ' min' : '-'}`,
-        `${noteLine}: ${c.note || '-'}`,
+        (lang === 'de' ? 'Datum' : 'Date') + ': ' + (c.record_date || '-'),
+        (lang === 'de' ? 'Vorschlag Kommen' : 'Requested clock-in') + ': ' + (c.proposed_clock_in || '-'),
+        (lang === 'de' ? 'Vorschlag Gehen' : 'Requested clock-out') + ': ' + (c.proposed_clock_out || '-'),
+        (lang === 'de' ? 'Vorschlag Pause' : 'Requested break') + ': ' + (c.proposed_break_minutes !== null && c.proposed_break_minutes !== undefined ? c.proposed_break_minutes + ' min' : '-'),
+        (lang === 'de' ? 'Notiz' : 'Note') + ': ' + (c.note || '-'),
       ].join('\n');
     }
 
     function openNotificationModal(notifId) {
-      const notif = currentNotifications.find(n => n.id === notifId);
+      var notif = currentNotifications.find(function(n) { return n.id === notifId; });
       if (!notif) return;
-      const lang = getLang();
-      const titleEl = document.getElementById('notificationModalTitle');
-      const msgEl = document.getElementById('notificationModalMessage');
-      const actionsEl = document.getElementById('notificationModalActions');
-      const isHrCorrection = notif.notification_type === 'EDIT_REQUEST' || notif.notification_type === 'CORRECTION';
-      const isDeleteRequest = Boolean(notif.correction && notif.correction.is_delete_request);
-      const defaultTitle = notif.title || (lang === 'de' ? 'Benachrichtigung' : 'Notification');
-      titleEl.textContent = notif.title;
-      msgEl.textContent = isHrCorrection
-        ? buildCorrectionMessage(notif)
-        : notif.message;
+      var lang = getLang();
+      var titleEl = document.getElementById('notificationModalTitle');
+      var msgEl = document.getElementById('notificationModalMessage');
+      var actionsEl = document.getElementById('notificationModalActions');
+      var isHrCorrection = notif.notification_type === 'EDIT_REQUEST' || notif.notification_type === 'CORRECTION';
+      var isDeleteRequest = Boolean(notif.correction && notif.correction.is_delete_request);
+      var defaultTitle = notif.title || (lang === 'de' ? 'Benachrichtigung' : 'Notification');
+
       if (isHrCorrection && isDeleteRequest) {
         titleEl.textContent = lang === 'de' ? 'Löschanfrage' : 'Delete Request';
       } else {
         titleEl.textContent = defaultTitle;
       }
+
+      msgEl.textContent = isHrCorrection ? buildCorrectionMessage(notif) : notif.message;
       actionsEl.innerHTML = '';
 
       if (isHrCorrection) {
-        actionsEl.innerHTML = `
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">${lang === 'de' ? 'Abbrechen' : 'Cancel'}</button>
-          <button type="button" class="btn btn-danger" onclick="handleCorrectionDecision(${notif.id}, 'REJECT')">${lang === 'de' ? 'Ablehnen' : 'Reject'}</button>
-          <button type="button" class="btn btn-success" onclick="handleCorrectionDecision(${notif.id}, 'APPROVE')">${lang === 'de' ? 'Genehmigen' : 'Approve'}</button>
-        `;
+        actionsEl.innerHTML =
+          '<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">' + (lang === 'de' ? 'Abbrechen' : 'Cancel') + '</button>' +
+          '<button type="button" class="btn" style="background:#c0392b;color:#fff;" onclick="handleCorrectionDecision(' + notif.id + ', \'REJECT\')">' + (lang === 'de' ? 'Ablehnen' : 'Reject') + '</button>' +
+          '<button type="button" class="btn" style="background:#4a7c6f;color:#fff;" onclick="handleCorrectionDecision(' + notif.id + ', \'APPROVE\')">' + (lang === 'de' ? 'Genehmigen' : 'Approve') + '</button>';
       } else {
-        actionsEl.innerHTML = `
-          <button type="button" class="btn btn-primary" onclick="markRead(${notif.id}, true)">${lang === 'de' ? 'OK / Bestätigen' : 'Acknowledge / OK'}</button>
-        `;
+        actionsEl.innerHTML =
+          '<button type="button" class="btn" style="background:#4a7c6f;color:#fff;" onclick="markRead(' + notif.id + ', true)">' + (lang === 'de' ? 'Bestätigen' : 'Acknowledge') + '</button>';
       }
 
       if (!notificationModalInstance) {
@@ -225,112 +242,120 @@
     }
 
     function getNotifBadgeMeta(notif) {
-      const lang = getLang();
-      const isHrCorrection = notif.notification_type === 'EDIT_REQUEST' || notif.notification_type === 'CORRECTION';
-      const isDeleteRequest = Boolean(notif.correction && notif.correction.is_delete_request);
+      var lang = getLang();
+      var isHrCorrection = notif.notification_type === 'EDIT_REQUEST' || notif.notification_type === 'CORRECTION';
+      var isDeleteRequest = Boolean(notif.correction && notif.correction.is_delete_request);
       if (isHrCorrection && isDeleteRequest) {
-        return {
-          label: lang === 'de' ? 'Löschung' : 'Delete',
-          cls: 'notif-type-delete',
-        };
+        return { label: lang === 'de' ? 'Löschung' : 'Delete', cls: 'notif-type-delete' };
       }
       if (isHrCorrection) {
-        return {
-          label: lang === 'de' ? 'Korrektur' : 'Correction',
-          cls: 'notif-type-correction',
-        };
+        return { label: lang === 'de' ? 'Korrektur' : 'Correction', cls: 'notif-type-correction' };
       }
       if (notif.notification_type === 'REMINDER') {
-        return {
-          label: lang === 'de' ? 'Erinnerung' : 'Reminder',
-          cls: 'notif-type-reminder',
-        };
+        return { label: lang === 'de' ? 'Erinnerung' : 'Reminder', cls: 'notif-type-reminder' };
       }
-      return {
-        label: lang === 'de' ? 'Info' : 'Info',
-        cls: 'notif-type-info',
-      };
+      return { label: 'Info', cls: 'notif-type-info' };
     }
 
-    async function loadNotifications() {
-      try {
-        const resp = await fetch('/api/notifications/');
-        const data = await resp.json();
+    function loadNotifications() {
+      fetch('/api/notifications/').then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
         if (!data.ok) return;
         currentNotifications = data.notifications || [];
-
-        const list = document.getElementById('notifList');
-        const lang = getLang();
+        var list = document.getElementById('notifList');
+        var lang = getLang();
 
         if (currentNotifications.length === 0) {
-          const emptyMsg = lang === 'de' ? 'Keine Benachrichtigungen' : 'No notifications';
-          list.innerHTML = `<div class="p-3 text-center text-muted small">${emptyMsg}</div>`;
+          list.innerHTML = '<div class="p-3 text-center text-muted small">' + (lang === 'de' ? 'Keine Benachrichtigungen' : 'No notifications') + '</div>';
           return;
         }
 
-        list.innerHTML = currentNotifications.map(n => {
-          const date = new Date(n.created_at);
-          const badge = getNotifBadgeMeta(n);
-          const timeStr = date.toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', {
+        list.innerHTML = currentNotifications.map(function(n) {
+          var date = new Date(n.created_at);
+          var badge = getNotifBadgeMeta(n);
+          var timeStr = date.toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', {
             day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
           });
-          return `
-            <div class="notification-item ${n.is_read ? '' : 'unread'}" data-notif-id="${n.id}" onclick="event.stopPropagation(); openNotificationModal(${n.id})">
-              <div class="fw-bold">${n.title}<span class="notif-type-badge ${badge.cls}">${badge.label}</span></div>
-              <div class="text-muted small">${n.message}</div>
-              <div class="notif-time">${timeStr}</div>
-            </div>`;
+          return '<div class="notification-item ' + (n.is_read ? '' : 'unread') + '" data-notif-id="' + n.id + '" onclick="event.stopPropagation(); openNotificationModal(' + n.id + ')">' +
+            '<div class="fw-bold">' + n.title + '<span class="notif-type-badge ' + badge.cls + '">' + badge.label + '</span></div>' +
+            '<div class="text-muted small">' + n.message + '</div>' +
+            '<div class="notif-time">' + timeStr + '</div>' +
+            '</div>';
         }).join('');
-      } catch (err) {
-        console.warn('Failed to load notifications:', err);
-      }
+      }).catch(function(err) {
+        /* notification fetch failed silently */
+      });
     }
 
-    async function markRead(notifId, closeModal = false) {
-      const csrf = getCsrfToken();
-      const body = new URLSearchParams({ notification_id: notifId });
-      await fetch('/api/notifications/mark-read/', {
+    function markRead(notifId, closeModal) {
+      var csrf = getCsrfToken();
+      var body = new URLSearchParams({ notification_id: notifId });
+      fetch('/api/notifications/mark-read/', {
         method: 'POST',
         headers: { 'X-CSRFToken': csrf },
         body: body,
+      }).then(function() {
+        hideNotificationFromUi(notifId);
+        if (closeModal && notificationModalInstance) {
+          notificationModalInstance.hide();
+        }
+        fetchNotifications();
       });
-      hideNotificationFromUi(notifId);
-      if (closeModal && notificationModalInstance) {
-        notificationModalInstance.hide();
-      }
-      fetchNotifications();
     }
 
-    async function handleCorrectionDecision(notifId, decision) {
-      const csrf = getCsrfToken();
-      const body = new URLSearchParams({
+    function handleCorrectionDecision(notifId, decision) {
+      var csrf = getCsrfToken();
+      var body = new URLSearchParams({
         notification_id: notifId,
         decision: decision,
       });
-      const resp = await fetch('/api/approve-correction/', {
+      fetch('/api/approve-correction/', {
         method: 'POST',
         headers: { 'X-CSRFToken': csrf },
         body: body,
+      }).then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
+        if (!data.ok) {
+          alert(data.error || 'Fehler bei der Verarbeitung.');
+          return;
+        }
+        hideNotificationFromUi(notifId);
+        if (notificationModalInstance) notificationModalInstance.hide();
+
+        var lang = getLang();
+        var sideMsg = data.hr_confirmation || '';
+        if (decision === 'APPROVE') {
+          showSideNotification(
+            lang === 'de' ? 'Genehmigt' : 'Approved',
+            sideMsg || (lang === 'de' ? 'Anfrage wurde erfolgreich genehmigt.' : 'Request has been approved.')
+          );
+        } else {
+          showSideNotification(
+            lang === 'de' ? 'Abgelehnt' : 'Rejected',
+            sideMsg || (lang === 'de' ? 'Anfrage wurde abgelehnt.' : 'Request has been rejected.')
+          );
+        }
+
+        fetchNotifications();
+
+        if (typeof refreshDashboardData === 'function') {
+          setTimeout(function() { location.reload(); }, 1200);
+        }
       });
-      const data = await resp.json();
-      if (!data.ok) {
-        alert(data.error || 'Failed to process correction.');
-        return;
-      }
-      hideNotificationFromUi(notifId);
-      if (notificationModalInstance) notificationModalInstance.hide();
-      fetchNotifications();
     }
 
-    async function doMarkAllRead() {
-      const csrf = getCsrfToken();
-      await fetch('/api/notifications/mark-all-read/', {
+    function doMarkAllRead() {
+      var csrf = getCsrfToken();
+      fetch('/api/notifications/mark-all-read/', {
         method: 'POST',
         headers: { 'X-CSRFToken': csrf },
+      }).then(function() {
+        currentNotifications = [];
+        fetchNotifications();
+        loadNotifications();
       });
-      currentNotifications = [];
-      fetchNotifications();
-      loadNotifications();
     }
   </script>
   {% block extra_js %}{% endblock %}

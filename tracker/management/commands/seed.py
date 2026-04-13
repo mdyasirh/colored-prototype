@@ -1,7 +1,4 @@
-"""
-Management command to seed the database with demo data.
-Creates groups, users, employee profiles, and historical time records.
-"""
+"""Erzeugt Demo-Daten: Gruppen, Benutzer, Mitarbeiterprofile und Zeiteinträge."""
 import datetime
 import random
 
@@ -18,10 +15,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("Seeding database...")
 
-        # Create HR group
         hr_group, _ = Group.objects.get_or_create(name="HR")
 
-        # ---- Users & Profiles ----
         employees_data = [
             {"username": "lisa", "first": "Lisa", "last": "Müller", "pin": "1234", "dept": "Training", "target": 160},
             {"username": "tom", "first": "Tom", "last": "Fischer", "pin": "2345", "dept": "Training", "target": 160},
@@ -74,23 +69,22 @@ class Command(BaseCommand):
         )
         self.stdout.write(f"  ✓ HR User: {hr_user.get_full_name()} (hr / hr1234)")
 
-        # ---- Generate Historical Time Records (20 days) ----
         today = datetime.date.today()
-        self.stdout.write("\nGenerating 20 days of historical records...")
+        self.stdout.write("\nZeiteinträge werden erzeugt...")
 
         for username, profile in profiles.items():
             for day_offset in range(1, 21):
                 record_date = today - datetime.timedelta(days=day_offset)
 
-                # Skip weekends
+                # Wochenenden überspringen
                 if record_date.weekday() >= 5:
                     continue
 
-                # Tom Fischer: skip ~6 days to create > 5h deficit
+                # Tom Fischer: Tage auslassen für Defizit-Darstellung
                 if username == "tom" and day_offset in (2, 4, 6, 8, 10, 12):
                     continue
 
-                # Klara Neumann: work extra-long hours for > 5h overtime
+                # Klara Neumann: Überstunden-Darstellung
                 if username == "klara":
                     work_hours = random.uniform(9.0, 11.0)
                 else:
@@ -108,7 +102,6 @@ class Command(BaseCommand):
                 total_minutes = int(work_hours * 60) + break_minutes
                 clock_out_dt = clock_in_dt + datetime.timedelta(minutes=total_minutes)
 
-                # Check for existing record before creating
                 if DailyTimeRecord.objects.filter(employee=profile, date=record_date).exists():
                     continue
 
@@ -121,9 +114,9 @@ class Command(BaseCommand):
                     status="CLOCKED_OUT",
                 )
 
-            self.stdout.write(f"  ✓ Records generated for {profile}")
+            self.stdout.write(f"  ✓ Einträge erzeugt für {profile}")
 
-        self.stdout.write(self.style.SUCCESS("\n✅ Database seeded successfully!"))
-        self.stdout.write("\nLogin credentials:")
-        self.stdout.write("  Employees: lisa/1234, tom/2345, klara/3456, max/4567, anna/5678")
-        self.stdout.write("  HR Admin:  hr/hr1234")
+        self.stdout.write(self.style.SUCCESS("\nDatenbank erfolgreich befüllt."))
+        self.stdout.write("\nZugangsdaten:")
+        self.stdout.write("  Mitarbeitende: lisa/1234, tom/2345, klara/3456, max/4567, anna/5678")
+        self.stdout.write("  Admin:         hr/hr1234")

@@ -14,9 +14,7 @@ from django.views.decorators.http import require_POST
 from .models import CorrectionRequest, DailyTimeRecord, EmployeeProfile, HRReview, Notification
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+# Hilfsfunktionen
 
 def is_hr(user):
     return user.groups.filter(name="HR").exists()
@@ -35,7 +33,7 @@ def _parse_browser_iso_to_local(iso_value):
 
 
 def _get_active_record(profile):
-    """Return the latest open record for this employee."""
+    """Letzten offenen Zeiteintrag des Mitarbeiters zurückgeben."""
     today = timezone.localdate()
     record = (
         DailyTimeRecord.objects.filter(
@@ -48,7 +46,7 @@ def _get_active_record(profile):
     )
     if record:
         return record
-    # Fallback: any open record in case date differs due timezone/client clock mismatch.
+    # Offener Eintrag von heute (falls vorhanden)
     return (
         DailyTimeRecord.objects.filter(
             employee=profile,
@@ -60,7 +58,7 @@ def _get_active_record(profile):
 
 
 def _today_record(profile):
-    """Get or create today's DailyTimeRecord for the given profile."""
+    """Tageseintrag für das Profil abrufen oder erstellen."""
     today = datetime.date.today()
     # Get the latest active (non-CLOCKED_OUT) record for today, or create new
     record = DailyTimeRecord.objects.filter(
@@ -80,9 +78,7 @@ def _today_record(profile):
     return record
 
 
-# ---------------------------------------------------------------------------
-# Auth views
-# ---------------------------------------------------------------------------
+# Anmeldung / Abmeldung
 
 def login_view(request):
     error = ""
@@ -104,13 +100,11 @@ def logout_view(request):
     return redirect("login")
 
 
-# ---------------------------------------------------------------------------
-# Notification API endpoints
-# ---------------------------------------------------------------------------
+# Benachrichtigungs-Endpunkte
 
 @login_required
 def api_notifications(request):
-    """Return unread notifications for the current user."""
+    """Ungelesene Benachrichtigungen als JSON zurückgeben."""
     notifications_qs = Notification.objects.filter(
         recipient=request.user,
         is_read=False,
@@ -165,7 +159,7 @@ def api_notifications(request):
 @login_required
 @require_POST
 def api_mark_notification_read(request):
-    """Mark a notification as read."""
+    """Benachrichtigung als gelesen markieren."""
     notif_id = request.POST.get("notification_id")
     try:
         notif = Notification.objects.get(pk=notif_id, recipient=request.user)
@@ -180,14 +174,12 @@ def api_mark_notification_read(request):
 @login_required
 @require_POST
 def api_mark_all_notifications_read(request):
-    """Mark all notifications as read for the current user."""
+    """Alle Benachrichtigungen als gelesen markieren."""
     Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
     return JsonResponse({"ok": True})
 
 
-# ---------------------------------------------------------------------------
-# Employee punch-clock page
-# ---------------------------------------------------------------------------
+# Stempeluhr-Seite
 
 @login_required
 def punch_clock_view(request):
@@ -239,9 +231,7 @@ def punch_clock_view(request):
     return render(request, "punch_clock.html", ctx)
 
 
-# ---------------------------------------------------------------------------
-# Employee AJAX endpoints
-# ---------------------------------------------------------------------------
+# Stempeluhr AJAX-Endpunkte
 
 @login_required
 @require_POST
@@ -416,21 +406,39 @@ def api_approve_correction(request):
 
     notif.is_read = True
     notif.save(update_fields=["is_read"])
+
     Notification.objects.create(
         recipient=employee_user,
         sender=request.user,
         notification_type="INFO",
         title=employee_title,
         message=employee_msg,
-        related_record=None if is_delete_request else record,
+        related_record=None if (is_delete_request and decision == "APPROVE") else record,
     )
-    return JsonResponse({"ok": True, "decision": decision, "notification_id": notif.id})
+
+    if decision == "APPROVE":
+        hr_title = "Genehmigung durchgeführt"
+        hr_msg = (
+            f"Löschanfrage von {employee_user.get_full_name() or employee_user.username} genehmigt."
+            if is_delete_request
+            else f"Korrektur von {employee_user.get_full_name() or employee_user.username} genehmigt."
+        )
+    else:
+        hr_title = "Ablehnung durchgeführt"
+        hr_msg = f"Korrektur von {employee_user.get_full_name() or employee_user.username} abgelehnt."
+
+    return JsonResponse({
+        "ok": True,
+        "decision": decision,
+        "notification_id": notif.id,
+        "hr_confirmation": hr_msg,
+    })
 
 
 @login_required
 @require_POST
 def api_submit_correction(request):
-    """Submit a correction/edit request for a time record."""
+    """Korrekturanfrage für einen Zeiteintrag einreichen."""
     profile = request.user.employeeprofile
     record_id = request.POST.get("record_id")
     proposed_clock_in = request.POST.get("proposed_clock_in", "").strip()
@@ -486,7 +494,7 @@ def api_submit_correction(request):
 @login_required
 @require_POST
 def api_delete_record(request):
-    """Submit deletion request for HR approval (does not delete immediately)."""
+    """Löschanfrage an HR senden (kein sofortiges Löschen)."""
     profile = request.user.employeeprofile
     record_id = request.POST.get("record_id")
 
@@ -516,9 +524,7 @@ def api_delete_record(request):
     return JsonResponse({"ok": True, "request_id": correction.id})
 
 
-# ---------------------------------------------------------------------------
-# HR Dashboard
-# ---------------------------------------------------------------------------
+# HR-Übersicht
 
 @login_required
 @user_passes_test(is_hr, login_url="/access-denied/")
@@ -596,9 +602,7 @@ def access_denied_view(request):
     return render(request, "access_denied.html", status=403)
 
 
-# ---------------------------------------------------------------------------
-# HR Action endpoints
-# ---------------------------------------------------------------------------
+# HR-Aktionen
 
 @login_required
 @user_passes_test(is_hr, login_url="/access-denied/")
@@ -670,9 +674,7 @@ def api_acknowledge(request):
     return JsonResponse({"ok": True, "status": review.status})
 
 
-# ---------------------------------------------------------------------------
-# CSV Export
-# ---------------------------------------------------------------------------
+# CSV-Export
 
 @login_required
 @user_passes_test(is_hr, login_url="/access-denied/")

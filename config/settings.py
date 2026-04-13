@@ -1,11 +1,11 @@
-"""Django settings for FitLife Studio Time Tracking project."""
+"""Konfiguration für das FitLife Studio Zeiterfassungssystem."""
 
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-change-me-in-production-fitlife-studio-2024"
+SECRET_KEY = "django-insecure-fl-studio-dev-kx93m7q2p8w4"
 
 DEBUG = True
 
