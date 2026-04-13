@@ -5,20 +5,20 @@
 <style>
   .clock-panel {
     background: #fff;
-    border: 1px solid #d6d0c4;
-    color: #2e2e2e;
-    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-radius: 10px;
   }
   .plan-panel {
     background: #fff;
-    border: 1px solid #d6d0c4;
-    color: #2e2e2e;
-    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-radius: 10px;
   }
-  .plan-metric { color: #4a4a4a; }
-  .plan-metric strong { color: #2e2e2e; }
-  #remainingClock { color: #4a7c6f; }
-  #digitalClock { color: #3b3b3b; }
+  .plan-metric { color: #475569; }
+  .plan-metric strong { color: #1e293b; }
+  #remainingClock { color: #2563eb; }
+  #digitalClock { color: #1e293b; }
 </style>
 <div class="row justify-content-center">
   <div class="col-lg-8">
@@ -114,7 +114,7 @@
             <td>{{ rec.clock_in|date:"H:i"|default:"--" }}</td>
             <td>
               {% if rec.clock_in and not rec.clock_out %}
-                <span class="badge" style="background:#c0392b;" data-en="No clock-out" data-de="Kein Ausstempeln">Kein Ausstempeln</span>
+                <span class="badge" style="background:#ef4444;" data-en="No clock-out" data-de="Kein Ausstempeln">Kein Ausstempeln</span>
               {% else %}
                 {{ rec.clock_out|date:"H:i"|default:"--" }}
               {% endif %}
@@ -123,18 +123,18 @@
             <td>{{ rec.net_hours|default:"--" }}</td>
             <td>
               {% if rec.status == "CLOCKED_OUT" or rec.status == "MISSING_CLOCKOUT" or rec.clock_in and not rec.clock_out %}
-                <button class="btn btn-sm me-1" style="border:1px solid #4a7c6f;color:#4a7c6f;"
+                <button class="btn btn-sm me-1" style="border:1px solid #2563eb;color:#2563eb;"
                         data-en="Edit" data-de="Bearbeiten"
                         onclick="showEditModal({{ rec.pk }}, '{{ rec.clock_in|date:"H:i"|default:"" }}', '{{ rec.clock_out|date:"H:i"|default:"" }}', {{ rec.total_break_minutes }})">
                   Bearbeiten
                 </button>
-                <button class="btn btn-sm" style="border:1px solid #c0392b;color:#c0392b;"
+                <button class="btn btn-sm" style="border:1px solid #ef4444;color:#ef4444;"
                         data-en="Delete" data-de="Löschen"
                         onclick="confirmDeleteRecord({{ rec.pk }})">
                   Löschen
                 </button>
               {% elif rec.status == "WORKING" or rec.status == "ON_BREAK" %}
-                <span class="badge badge-pulse" style="background:#4a7c6f;" data-en="Active" data-de="Aktiv">Aktiv</span>
+                <span class="badge badge-pulse" style="background:#2563eb;" data-en="Active" data-de="Aktiv">Aktiv</span>
               {% endif %}
             </td>
           </tr>
@@ -151,8 +151,8 @@
 
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog">
-    <div class="modal-content" style="background:#fff;color:#2e2e2e;border:1px solid #d6d0c4;">
-      <div class="modal-header" style="border-bottom:1px solid #e8e4dc;">
+    <div class="modal-content" style="background:#fff;color:#1e293b;border:1px solid #e2e8f0;">
+      <div class="modal-header" style="border-bottom:1px solid #f1f5f9;">
         <h5 class="modal-title" data-en="Edit Time Entry" data-de="Zeiteintrag bearbeiten">Zeiteintrag bearbeiten</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
@@ -175,9 +175,9 @@
           <textarea id="editNote" class="form-control" rows="2"></textarea>
         </div>
       </div>
-      <div class="modal-footer" style="border-top:1px solid #e8e4dc;">
+      <div class="modal-footer" style="border-top:1px solid #f1f5f9;">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-en="Cancel" data-de="Abbrechen">Abbrechen</button>
-        <button type="button" class="btn" style="background:#4a7c6f;color:#fff;" onclick="submitEditRequest()" data-en="Submit Request" data-de="Anfrage senden">Anfrage senden</button>
+        <button type="button" class="btn" style="background:#2563eb;color:#fff;" onclick="submitEditRequest()" data-en="Submit Request" data-de="Anfrage senden">Anfrage senden</button>
       </div>
     </div>
   </div>
@@ -189,7 +189,7 @@
     <p id="confirmMessage" class="text-muted"></p>
     <div class="d-flex justify-content-center gap-3 mt-4">
       <button class="btn btn-secondary px-4" onclick="hideConfirm()" data-en="Cancel" data-de="Abbrechen">Abbrechen</button>
-      <button class="btn px-4" style="background:#c0392b;color:#fff;" id="confirmBtn" data-en="Confirm" data-de="Bestätigen">Bestätigen</button>
+      <button class="btn px-4" style="background:#ef4444;color:#fff;" id="confirmBtn" data-en="Confirm" data-de="Bestätigen">Bestätigen</button>
     </div>
   </div>
 </div>
@@ -248,19 +248,19 @@ function applyPlanDeviationStyle() {
   var lang = localStorage.getItem('lang') || 'de';
   var raw = (deltaEl ? deltaEl.textContent : '0').replace('+', '').replace(',', '.');
   var delta = Number(raw) || 0;
-  card.style.borderColor = '#d6d0c4';
+  card.style.borderColor = '#e2e8f0';
   if (delta < -5) {
-    card.style.borderColor = '#c0392b';
+    card.style.borderColor = '#ef4444';
     label.textContent = lang === 'de' ? 'Weniger als geplant' : 'Less than planned';
-    label.style.color = '#c0392b';
+    label.style.color = '#ef4444';
   } else if (delta > 5) {
-    card.style.borderColor = '#c4a046';
+    card.style.borderColor = '#f59e0b';
     label.textContent = lang === 'de' ? 'Mehr als geplant' : 'More than planned';
-    label.style.color = '#c4a046';
+    label.style.color = '#f59e0b';
   } else {
-    card.style.borderColor = '#4a7c6f';
+    card.style.borderColor = '#2563eb';
     label.textContent = lang === 'de' ? 'Im geplanten Bereich' : 'Within planned range';
-    label.style.color = '#4a7c6f';
+    label.style.color = '#2563eb';
   }
 }
 
@@ -349,7 +349,7 @@ function renderState(status, clockIn) {
 
   if (status === 'NONE' || status === '') {
     statusArea.innerHTML = '<p class="text-muted fs-5">' + t.notClockedIn + '</p>';
-    actionBtns.innerHTML = '<button class="btn btn-lg px-5 py-3 fs-3" style="background:#4a7c6f;color:#fff;" onclick="doPunch(\'punch-in\')">' + t.start + '</button>';
+    actionBtns.innerHTML = '<button class="btn btn-lg px-5 py-3 fs-3" style="background:#2563eb;color:#fff;" onclick="doPunch(\'punch-in\')">' + t.start + '</button>';
     activeClockInIso = '';
     activeBreakStartIso = '';
     accumulatedBreakMinutes = 0;
@@ -358,18 +358,18 @@ function renderState(status, clockIn) {
     stopShiftTimer();
     updateDigitalClock();
   } else if (status === 'WORKING') {
-    statusArea.innerHTML = '<span id="workStatusBadge" class="badge badge-pulse fs-5 p-3" style="background:#4a7c6f;color:#fff;">⏱ ' + t.working + ' (' + clockIn + ')</span>';
+    statusArea.innerHTML = '<span id="workStatusBadge" class="badge badge-pulse fs-5 p-3" style="background:#2563eb;color:#fff;">⏱ ' + t.working + ' (' + clockIn + ')</span>';
     actionBtns.innerHTML =
-      '<button class="btn btn-lg me-3 px-4 py-2" style="background:#c4a046;color:#fff;" onclick="doPunch(\'break-start\')">' + t.breakBtn + '</button>' +
-      '<button class="btn btn-lg px-4 py-2" style="background:#c0392b;color:#fff;" onclick="confirmClockOut()">' + t.stop + '</button>';
+      '<button class="btn btn-lg me-3 px-4 py-2" style="background:#f59e0b;color:#fff;" onclick="doPunch(\'break-start\')">' + t.breakBtn + '</button>' +
+      '<button class="btn btn-lg px-4 py-2" style="background:#ef4444;color:#fff;" onclick="confirmClockOut()">' + t.stop + '</button>';
     startShiftTimer();
   } else if (status === 'ON_BREAK') {
-    statusArea.innerHTML = '<span id="workStatusBadge" class="badge fs-5 p-3" style="background:#c4a046;color:#fff;">☕ ' + t.onBreak + '</span>';
-    actionBtns.innerHTML = '<button class="btn btn-lg px-5 py-2" style="background:#4a7c6f;color:#fff;" onclick="doPunch(\'break-end\')">' + t.resume + '</button>';
+    statusArea.innerHTML = '<span id="workStatusBadge" class="badge fs-5 p-3" style="background:#f59e0b;color:#fff;">☕ ' + t.onBreak + '</span>';
+    actionBtns.innerHTML = '<button class="btn btn-lg px-5 py-2" style="background:#2563eb;color:#fff;" onclick="doPunch(\'break-end\')">' + t.resume + '</button>';
     startShiftTimer();
   } else if (status === 'CLOCKED_OUT') {
-    statusArea.innerHTML = '<span class="badge fs-5 p-3" style="background:#8a8a8a;color:#fff;">' + t.clockedOut + '</span>';
-    actionBtns.innerHTML = '<button class="btn btn-lg px-4 py-2 mt-3" style="background:#4a7c6f;color:#fff;" onclick="doPunch(\'punch-in\')">' + t.newShift + '</button>';
+    statusArea.innerHTML = '<span class="badge fs-5 p-3" style="background:#94a3b8;color:#fff;">' + t.clockedOut + '</span>';
+    actionBtns.innerHTML = '<button class="btn btn-lg px-4 py-2 mt-3" style="background:#2563eb;color:#fff;" onclick="doPunch(\'punch-in\')">' + t.newShift + '</button>';
     summaryCard.style.display = 'block';
     pausedWorkedSeconds = null;
     stopShiftTimer();

@@ -4,7 +4,7 @@
 <div class="row justify-content-center mt-5">
   <div class="col-md-5">
     <div class="card shadow p-4">
-      <h3 class="text-center mb-4 text-light" data-en="Employee Login" data-de="Mitarbeiter-Anmeldung">Mitarbeiter-Anmeldung</h3>
+      <h3 class="text-center mb-4" style="color:#1e293b;" data-en="Employee Login" data-de="Mitarbeiter-Anmeldung">Mitarbeiter-Anmeldung</h3>
 
       {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
@@ -13,20 +13,20 @@
       <form method="post" id="loginForm">
         {% csrf_token %}
         <div class="mb-3">
-          <label class="form-label text-light" data-en="Username" data-de="Benutzername">Benutzername</label>
-          <input type="text" name="username" class="form-control bg-dark text-light border-secondary" required autofocus>
+          <label class="form-label" style="color:#475569;" data-en="Username" data-de="Benutzername">Benutzername</label>
+          <input type="text" name="username" class="form-control" style="border-color:#cbd5e1;" required autofocus>
         </div>
         <div class="mb-3">
-          <label class="form-label text-light" data-en="PIN / Password" data-de="PIN / Passwort">PIN / Passwort</label>
-          <input type="password" name="password" id="pinField" class="form-control bg-dark text-light border-secondary" required>
+          <label class="form-label" style="color:#475569;" data-en="PIN / Password" data-de="PIN / Passwort">PIN / Passwort</label>
+          <input type="password" name="password" id="pinField" class="form-control" style="border-color:#cbd5e1;" required>
         </div>
 
-        <button type="submit" class="btn w-100" style="background-color:#4a7c6f;color:#fff;" data-en="Sign In" data-de="Anmelden">Anmelden</button>
+        <button type="submit" class="btn w-100" style="background-color:#2563eb;color:#fff;font-weight:500;" data-en="Sign In" data-de="Anmelden">Anmelden</button>
       </form>
     </div>
 
     <div class="card shadow p-4 mt-4">
-      <h5 class="mb-3 text-light" data-en="Demo Credentials" data-de="Demo-Zugangsdaten">Demo-Zugangsdaten</h5>
+      <h5 class="mb-3" style="color:#1e293b;" data-en="Demo Credentials" data-de="Demo-Zugangsdaten">Demo-Zugangsdaten</h5>
       <div class="table-responsive">
         <table class="table table-sm table-dark mb-0">
           <thead>
