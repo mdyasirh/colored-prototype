@@ -339,10 +339,7 @@
         }
 
         fetchNotifications();
-
-        if (typeof refreshDashboardData === 'function') {
-          setTimeout(function() { location.reload(); }, 1200);
-        }
+        setTimeout(function() { location.reload(); }, 1500);
       });
     }
 

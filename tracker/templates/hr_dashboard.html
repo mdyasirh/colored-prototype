@@ -141,8 +141,6 @@
 <script>
 var CSRF = '{{ csrf_token }}';
 
-function refreshDashboardData() { return true; }
-
 function openReminderModal(reviewId, name) {
   document.getElementById('reminderReviewId').value = reviewId;
   document.getElementById('reminderTo').value = name;
