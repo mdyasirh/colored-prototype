@@ -8,14 +8,3 @@ python manage.py migrate
 python manage.py seed
 echo Starting server...
 python manage.py runserver
-# Install dependencies
-pip install -r requirements.txt
-
-# Run migrations
-python manage.py migrate
-
-# Seed demo data
-python manage.py seed
-
-# Start the development server
-python manage.py runserver

@@ -1,4 +1,4 @@
-"""Erzeugt Demo-Daten: Gruppen, Benutzer, Mitarbeiterprofile und Zeiteinträge."""
+"""Seed the database with demo employees and time records."""
 import datetime
 import random
 
@@ -70,21 +70,18 @@ class Command(BaseCommand):
         self.stdout.write(f"  ✓ HR User: {hr_user.get_full_name()} (hr / hr1234)")
 
         today = datetime.date.today()
-        self.stdout.write("\nZeiteinträge werden erzeugt...")
+        self.stdout.write("\nCreating time records...")
 
         for username, profile in profiles.items():
             for day_offset in range(1, 21):
                 record_date = today - datetime.timedelta(days=day_offset)
 
-                # Wochenenden überspringen
                 if record_date.weekday() >= 5:
                     continue
 
-                # Tom Fischer: Tage auslassen für Defizit-Darstellung
                 if username == "tom" and day_offset in (2, 4, 6, 8, 10, 12):
                     continue
 
-                # Klara Neumann: Überstunden-Darstellung
                 if username == "klara":
                     work_hours = random.uniform(9.0, 11.0)
                 else:
@@ -114,9 +111,9 @@ class Command(BaseCommand):
                     status="CLOCKED_OUT",
                 )
 
-            self.stdout.write(f"  ✓ Einträge erzeugt für {profile}")
+            self.stdout.write(f"  ✓ Records created for {profile}")
 
-        self.stdout.write(self.style.SUCCESS("\nDatenbank erfolgreich befüllt."))
-        self.stdout.write("\nZugangsdaten:")
-        self.stdout.write("  Mitarbeitende: lisa/1234, tom/2345, klara/3456, max/4567, anna/5678")
-        self.stdout.write("  Admin:         hr/hr1234")
+        self.stdout.write(self.style.SUCCESS("\nDatabase seeded successfully."))
+        self.stdout.write("\nCredentials:")
+        self.stdout.write("  Employees: lisa/1234, tom/2345, klara/3456, max/4567, anna/5678")
+        self.stdout.write("  Admin:     hr/hr1234")

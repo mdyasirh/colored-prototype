@@ -21,7 +21,6 @@ urlpatterns = [
     # Notification endpoints
     path("api/notifications/", views.api_notifications, name="api_notifications"),
     path("api/notifications/mark-read/", views.api_mark_notification_read, name="api_mark_notification_read"),
-    path("api/mark-notification-read/", views.api_mark_notification_read, name="api_mark_notification_read_alias"),
     path("api/notifications/mark-all-read/", views.api_mark_all_notifications_read, name="api_mark_all_notifications_read"),
 
     # HR dashboard
